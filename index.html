@@ -1,0 +1,1244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>For Misty • Peace Treaty 🎀</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet">
+
+  <!-- Canvas Confetti Library -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+  <style>
+    :root {
+      --bg: #0e0915;
+      --card-bg: rgba(26, 17, 38, 0.85);
+      --card-border: rgba(255, 255, 255, 0.1);
+      --pink-primary: #f43f5e;
+      --pink-glow: rgba(244, 63, 94, 0.4);
+      --purple-accent: #a855f7;
+      --text-main: #fdf2f8;
+      --text-muted: #c084fc;
+      --text-dim: #93749f;
+      --font-body: 'Plus Jakarta Sans', sans-serif;
+      --font-serif: 'Playfair Display', serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+    }
+
+    body {
+      background: var(--bg);
+      background-image: 
+        radial-gradient(circle at 10% 15%, rgba(244, 63, 94, 0.18) 0%, transparent 40%),
+        radial-gradient(circle at 90% 85%, rgba(168, 85, 247, 0.18) 0%, transparent 45%),
+        radial-gradient(circle at 50% 50%, rgba(236, 72, 153, 0.08) 0%, transparent 60%);
+      color: var(--text-main);
+      font-family: var(--font-body);
+      min-height: 100vh;
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 16px 24px;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    /* Floating ambient stars/sparkles */
+    .sparkle {
+      position: absolute;
+      pointer-events: none;
+      animation: floatTwinkle 4s infinite ease-in-out;
+      opacity: 0.6;
+    }
+
+    @keyframes floatTwinkle {
+      0%, 100% { transform: translateY(0) scale(0.8); opacity: 0.3; }
+      50% { transform: translateY(-10px) scale(1.2); opacity: 0.8; }
+    }
+
+    /* Top Progress Bar & Header */
+    .header-bar {
+      width: 100%;
+      max-width: 480px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      z-index: 10;
+      margin-bottom: 12px;
+    }
+
+    .top-pill-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .badge-tag {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--card-border);
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      backdrop-filter: blur(10px);
+    }
+
+    .sound-toggle-btn {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--card-border);
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      color: var(--text-main);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      backdrop-filter: blur(10px);
+      transition: all 0.2s;
+    }
+
+    .sound-toggle-btn:active {
+      transform: scale(0.95);
+    }
+
+    /* Multi-step progress capsules */
+    .step-indicator {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+
+    .step-pill {
+      height: 5px;
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 4px;
+      transition: all 0.4s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .step-pill.active {
+      background: linear-gradient(90deg, var(--pink-primary), var(--purple-accent));
+      box-shadow: 0 0 10px var(--pink-glow);
+    }
+
+    .step-pill.passed {
+      background: var(--purple-accent);
+    }
+
+    /* Main Container for Carousel/Pages */
+    .main-viewport {
+      width: 100%;
+      max-width: 480px;
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      perspective: 1000px;
+    }
+
+    .page-card {
+      width: 100%;
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 28px;
+      padding: 24px 20px;
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+      display: none;
+      flex-direction: column;
+      gap: 18px;
+      animation: cardEnter 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+      position: relative;
+    }
+
+    .page-card.active {
+      display: flex;
+    }
+
+    @keyframes cardEnter {
+      from {
+        opacity: 0;
+        transform: translateY(20px) scale(0.96);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    /* Page Titles */
+    .page-tagline {
+      font-size: 11.5px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: var(--pink-primary);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .page-title {
+      font-family: var(--font-serif);
+      font-size: 26px;
+      font-weight: 700;
+      color: #fff;
+      line-height: 1.25;
+    }
+
+    .page-desc {
+      font-size: 13.5px;
+      color: #e2cde5;
+      line-height: 1.6;
+    }
+
+    /* PAGE 1: Gussa Meter */
+    .meter-container {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 20px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .meter-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .meter-val {
+      font-size: 18px;
+      color: var(--pink-primary);
+      font-weight: 800;
+    }
+
+    input[type=range] {
+      -webkit-appearance: none;
+      width: 100%;
+      background: transparent;
+    }
+
+    input[type=range]:focus {
+      outline: none;
+    }
+
+    input[type=range]::-webkit-slider-runnable-track {
+      width: 100%;
+      height: 8px;
+      cursor: pointer;
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 6px;
+      border: none;
+    }
+
+    input[type=range]::-webkit-slider-thumb {
+      height: 24px;
+      width: 24px;
+      border-radius: 50%;
+      background: var(--pink-primary);
+      cursor: pointer;
+      -webkit-appearance: none;
+      margin-top: -8px;
+      box-shadow: 0 0 12px var(--pink-glow);
+      transition: transform 0.1s;
+    }
+
+    input[type=range]::-webkit-slider-thumb:active {
+      transform: scale(1.2);
+    }
+
+    .meter-reaction-box {
+      background: rgba(244, 63, 94, 0.1);
+      border: 1px dashed var(--pink-primary);
+      border-radius: 12px;
+      padding: 10px 14px;
+      font-size: 13px;
+      color: #ffe4e6;
+      text-align: center;
+      min-height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+
+    /* Flip Cards Section on Page 1 */
+    .flip-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+
+    .flip-card {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 12px 8px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      min-height: 95px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .flip-card:active {
+      transform: scale(0.95);
+    }
+
+    .flip-card.flipped {
+      background: rgba(168, 85, 247, 0.15);
+      border-color: var(--purple-accent);
+    }
+
+    .flip-icon {
+      font-size: 22px;
+    }
+
+    .flip-label {
+      font-size: 11px;
+      font-weight: 700;
+      color: #e2cde5;
+    }
+
+    .flip-content {
+      font-size: 11px;
+      font-weight: 600;
+      color: #fdf2f8;
+      display: none;
+      line-height: 1.35;
+    }
+
+    .flip-card.flipped .flip-label,
+    .flip-card.flipped .flip-icon {
+      display: none;
+    }
+
+    .flip-card.flipped .flip-content {
+      display: block;
+    }
+
+    /* PAGE 2: Case File & Incident Breakdown */
+    .case-file-badge {
+      display: flex;
+      justify-content: space-between;
+      background: rgba(0, 0, 0, 0.3);
+      padding: 10px 14px;
+      border-radius: 12px;
+      font-size: 11.5px;
+      font-weight: 700;
+      border-left: 3px solid var(--pink-primary);
+    }
+
+    .incident-timeline {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .timeline-item {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.07);
+      border-radius: 14px;
+      padding: 12px 14px;
+      display: flex;
+      gap: 10px;
+      font-size: 12.5px;
+      line-height: 1.5;
+    }
+
+    .timeline-num {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: var(--pink-primary);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 800;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .timeline-text strong {
+      color: #fff;
+      display: block;
+      margin-bottom: 2px;
+      font-size: 13px;
+    }
+
+    /* Checklist */
+    .checklist-container {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .check-item {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 14px;
+      padding: 10px 14px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+      font-size: 12.5px;
+      transition: all 0.2s;
+    }
+
+    .check-item.checked {
+      background: rgba(168, 85, 247, 0.15);
+      border-color: var(--purple-accent);
+    }
+
+    .check-box {
+      width: 20px;
+      height: 20px;
+      border-radius: 6px;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      flex-shrink: 0;
+      transition: all 0.2s;
+    }
+
+    .check-item.checked .check-box {
+      background: var(--purple-accent);
+      border-color: var(--purple-accent);
+      color: #fff;
+    }
+
+    /* PAGE 3: The Peace Treaty & Interactive Decision */
+    .treaty-box {
+      background: linear-gradient(135deg, rgba(244, 63, 94, 0.1), rgba(168, 85, 247, 0.1));
+      border: 1px solid rgba(244, 63, 94, 0.25);
+      border-radius: 20px;
+      padding: 18px 16px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .treaty-stamp {
+      font-size: 44px;
+      animation: pulseBow 2s infinite ease-in-out;
+    }
+
+    @keyframes pulseBow {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.12); }
+    }
+
+    .btn-arena {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      position: relative;
+      min-height: 120px;
+      justify-content: center;
+    }
+
+    .btn-yes {
+      background: linear-gradient(135deg, var(--pink-primary), var(--purple-accent));
+      border: none;
+      color: #fff;
+      font-family: var(--font-body);
+      font-size: 15px;
+      font-weight: 800;
+      padding: 14px 20px;
+      border-radius: 20px;
+      cursor: pointer;
+      box-shadow: 0 8px 24px var(--pink-glow);
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .btn-yes:active {
+      transform: scale(0.97);
+    }
+
+    .btn-no {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: #c4b5fd;
+      font-family: var(--font-body);
+      font-size: 14px;
+      font-weight: 700;
+      padding: 12px 18px;
+      border-radius: 20px;
+      cursor: pointer;
+      transition: all 0.15s ease-out;
+      user-select: none;
+    }
+
+    /* Revealed Heartfelt Final Note */
+    .final-revealed-note {
+      display: none;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--purple-accent);
+      border-radius: 18px;
+      padding: 16px;
+      text-align: left;
+      font-size: 13.5px;
+      line-height: 1.65;
+      color: #fdf2f8;
+      animation: fadeIn 0.4s ease forwards;
+    }
+
+    .final-revealed-note.show {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .quick-signals {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: center;
+      margin-top: 10px;
+    }
+
+    .signal-pill {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: #fff;
+      padding: 7px 14px;
+      border-radius: 16px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .signal-pill:active {
+      transform: scale(0.95);
+      background: var(--pink-primary);
+    }
+
+    /* Bottom Navigation Bar */
+    .nav-bar {
+      width: 100%;
+      max-width: 480px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      z-index: 10;
+      margin-top: 14px;
+    }
+
+    .btn-nav {
+      background: rgba(255, 255, 255, 0.07);
+      border: 1px solid var(--card-border);
+      color: var(--text-main);
+      padding: 12px 20px;
+      border-radius: 18px;
+      font-family: var(--font-body);
+      font-size: 13.5px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+      backdrop-filter: blur(10px);
+    }
+
+    .btn-nav:active {
+      transform: scale(0.96);
+    }
+
+    .btn-nav.primary {
+      background: linear-gradient(135deg, var(--pink-primary), var(--purple-accent));
+      border: none;
+      box-shadow: 0 4px 16px var(--pink-glow);
+    }
+
+    .btn-nav:disabled {
+      opacity: 0.35;
+      cursor: not-allowed;
+      transform: none !important;
+    }
+
+    /* Toast */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      background: rgba(28, 16, 44, 0.95);
+      border: 1px solid var(--pink-primary);
+      color: #fff;
+      padding: 10px 18px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 600;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+      z-index: 999;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      pointer-events: none;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Share Modal Overlay & Card */
+    .share-modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(8, 4, 18, 0.78);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 18px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease;
+    }
+
+    .share-modal-overlay.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .share-modal-card {
+      background: linear-gradient(150deg, rgba(28, 16, 44, 0.98), rgba(16, 10, 28, 0.98));
+      border: 1px solid rgba(244, 63, 94, 0.35);
+      border-radius: 24px;
+      padding: 24px 20px;
+      width: 100%;
+      max-width: 360px;
+      text-align: center;
+      box-shadow: 0 16px 45px rgba(0, 0, 0, 0.65), 0 0 35px var(--pink-glow);
+      transform: translateY(20px) scale(0.95);
+      transition: transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .share-modal-overlay.open .share-modal-card {
+      transform: translateY(0) scale(1);
+    }
+
+    .share-modal-bow {
+      font-size: 34px;
+      margin-bottom: 6px;
+      animation: pulseBow 2s infinite ease-in-out;
+    }
+
+    .share-preview-box {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px dashed rgba(244, 63, 94, 0.35);
+      border-radius: 12px;
+      padding: 10px 14px;
+      font-size: 13px;
+      font-weight: 600;
+      color: #fed7aa;
+      margin: 10px 0 14px 0;
+      word-break: break-word;
+    }
+
+    .share-action-btns {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .btn-share-ig {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      background: linear-gradient(135deg, #c13584, #e1306c, #fd1d1d);
+      color: #fff;
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 700;
+      padding: 12px 16px;
+      border-radius: 16px;
+      box-shadow: 0 4px 15px rgba(225, 48, 108, 0.35);
+      transition: transform 0.15s;
+    }
+
+    .btn-share-ig:active {
+      transform: scale(0.97);
+    }
+
+    .btn-share-wa {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      background: linear-gradient(135deg, #25d366, #128c7e);
+      color: #fff;
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 700;
+      padding: 12px 16px;
+      border-radius: 16px;
+      box-shadow: 0 4px 15px rgba(37, 211, 102, 0.3);
+      transition: transform 0.15s;
+    }
+
+    .btn-share-wa:active {
+      transform: scale(0.97);
+    }
+
+    .btn-close-modal {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-size: 12.5px;
+      font-weight: 600;
+      cursor: pointer;
+      padding: 8px;
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Floating Ambient Sparkles -->
+  <div class="sparkle" style="top: 10%; left: 8%;">✨</div>
+  <div class="sparkle" style="top: 25%; right: 10%; animation-delay: 1.5s;">🎀</div>
+  <div class="sparkle" style="bottom: 18%; left: 12%; animation-delay: 2.2s;">💫</div>
+
+  <!-- Header Bar -->
+  <header class="header-bar">
+    <div class="top-pill-row">
+      <div class="badge-tag">
+        <span>🎀</span> <span id="headerStepLabel">Part 1 of 3</span>
+      </div>
+      <button class="sound-toggle-btn" id="soundBtn" title="Sound chime">
+        <span id="soundIcon">🔔</span>
+        <span id="soundText">Sound On</span>
+      </button>
+    </div>
+
+    <!-- Progress capsules -->
+    <div class="step-indicator">
+      <div class="step-pill active" id="pill-1"></div>
+      <div class="step-pill" id="pill-2"></div>
+      <div class="step-pill" id="pill-3"></div>
+    </div>
+  </header>
+
+  <!-- Viewport for Multi-Pages -->
+  <main class="main-viewport">
+
+    <!-- ==================== PAGE 1: REALITY CHECK ==================== -->
+    <div class="page-card active" id="page-1">
+      <div class="page-tagline">
+        <span>⚡</span> Reality Check
+      </div>
+      <h1 class="page-title">Wait... pehle meri baat sun lo 🥺</h1>
+      <p class="page-desc">
+        Mujhe pata hai pichle 4 din se tu mujhpe kitna gussa hai, aur trust me, tera gussa 1000% justified hai. Pehle ye batao:
+      </p>
+
+      <!-- Gussa Meter Slider -->
+      <div class="meter-container">
+        <div class="meter-header">
+          <span>Abhi kitna gussa aa raha hai?</span>
+          <span class="meter-val" id="gussaVal">85%</span>
+        </div>
+        <input type="range" id="gussaSlider" min="0" max="100" value="85">
+        <div class="meter-reaction-box" id="gussaReaction">
+          "Khoon khol raha hai na? I totally deserve it! 😬"
+        </div>
+      </div>
+
+      <!-- 3 Tap-to-flip honesty cards -->
+      <div style="font-size: 12px; color: var(--text-muted); font-weight: 700; text-align: center;">
+        👇 Tap each card to reveal truth:
+      </div>
+      <div class="flip-grid">
+        <div class="flip-card" onclick="flipCard(this)">
+          <div class="flip-icon">🙈</div>
+          <div class="flip-label">Galti kiski thi?</div>
+          <div class="flip-content">100% meri! Maine dimaag ghutne me rakh diya tha.</div>
+        </div>
+        <div class="flip-card" onclick="flipCard(this)">
+          <div class="flip-icon">😤</div>
+          <div class="flip-label">Tera gussa kaisa hai?</div>
+          <div class="flip-content">Bilkul sahi. Teri jagah mai hota toh mai bhi block karta.</div>
+        </div>
+        <div class="flip-card" onclick="flipCard(this)">
+          <div class="flip-icon">💔</div>
+          <div class="flip-label">Pichle 4 din?</div>
+          <div class="flip-content">Sach me bohot guilt hua. I miss our chats so much.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== PAGE 2: THE CONFESSION & CASE FILE ==================== -->
+    <div class="page-card" id="page-2">
+      <div class="page-tagline">
+        <span>⚖️</span> Incident Report #404
+      </div>
+      <h2 class="page-title">Daksh Ka Official Kand Breakdown</h2>
+      <p class="page-desc">
+        Maine koi safai nahi deni, bas jo galti maine ki wo bina jhooth ke maanta hu:
+      </p>
+
+      <!-- Case summary badge -->
+      <div class="case-file-badge">
+        <div><strong>Culprit:</strong> Daksh (Show-off)</div>
+        <div style="color: var(--pink-primary);"><strong>Victim:</strong> Misty 🎀</div>
+      </div>
+
+      <!-- Timeline of blunder -->
+      <div class="incident-timeline">
+        <div class="timeline-item">
+          <div class="timeline-num">1</div>
+          <div class="timeline-text">
+            <strong>Bina Soche Screenshots Dikhana:</strong>
+            Tune trust karke baat ki, maine school me cool banne ke chakkar me screenshots aur baatein bata di.
+          </div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-num">2</div>
+          <div class="timeline-text">
+            <strong>Tujhe Stress Me Daalna:</strong>
+            Jab classmates ne tere muh pe bola, tujhe kitna darr aur embarrassment hua hoga... maine us waqt tere point of view se bilkul nahi socha.
+          </div>
+        </div>
+      </div>
+
+      <!-- Interactive Promise Checklist -->
+      <div style="font-size: 12px; color: var(--text-muted); font-weight: 700;">
+        🔒 Mera pakka promise (Click to check):
+      </div>
+      <div class="checklist-container">
+        <div class="check-item" onclick="toggleCheck(this)">
+          <div class="check-box">✓</div>
+          <div>Aage se tere baare me school me <strong>zero baatein</strong> & koi screenshot nahi.</div>
+        </div>
+        <div class="check-item" onclick="toggleCheck(this)">
+          <div class="check-box">✓</div>
+          <div>School me agar kisi ne bola, toh <strong>mai unka muh band karunga</strong>.</div>
+        </div>
+        <div class="check-item" onclick="toggleCheck(this)">
+          <div class="check-box">✓</div>
+          <div>Tujhe full space dunga, <strong>baar-baar pareshan nahi karunga</strong>.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== PAGE 3: THE PEACE TREATY ==================== -->
+    <div class="page-card" id="page-3">
+      <div class="page-tagline">
+        <span>🕊️</span> Final Decision
+      </div>
+      <h2 class="page-title">The Official Peace Treaty 🎀</h2>
+      <p class="page-desc">
+        Dosti pehle jaise ekdam se toh nahi ho sakti, but kya hum ek chota sa trial shuru kar sakte hain?
+      </p>
+
+      <div class="treaty-box">
+        <div class="treaty-stamp">🤝✨</div>
+        <div style="font-size: 14.5px; font-weight: 700; color: #fff;">
+          Will you give our friendship a second chance?
+        </div>
+        
+        <div class="btn-arena" id="btnArena">
+          <button class="btn-yes" id="btnYes" onclick="acceptTreaty()">
+            <span>🎀</span> Haan, dheere-dheere soch sakti hu
+          </button>
+          <button class="btn-no" id="btnNo">
+            Nahi, kabhi nahi! 😤
+          </button>
+        </div>
+
+        <!-- Revealed Heartfelt Note after Yes -->
+        <div class="final-revealed-note" id="finalNote">
+          <div style="font-family: var(--font-serif); font-size: 18px; color: #fff; margin-bottom: 6px;">
+            Misty, jokes aside...
+          </div>
+          <p style="margin-bottom: 8px;">
+            I am really, truly sorry. Maine sach me pichle 4 din me bohot regret kiya hai. Tu chahe jitna time le, but please hamesha ke liye dosti mat todna. I really value our bond.
+          </p>
+          <div style="font-weight: 700; color: var(--pink-primary); margin-bottom: 12px;">
+            — Daksh 🫡
+          </div>
+
+          <!-- Quick signal back to Daksh -->
+          <div style="font-size: 11.5px; color: var(--text-muted); font-weight: 700; margin-bottom: 6px;">
+            Send a silent signal (tap to copy):
+          </div>
+          <div class="quick-signals">
+            <button class="signal-pill" onclick="sendSignal('Thoda gussa kam hua 🎀')">Thoda gussa kam hua 🎀</button>
+            <button class="signal-pill" onclick="sendSignal('Time lagega abhi ⏳')">Time lagega abhi ⏳</button>
+            <button class="signal-pill" onclick="sendSignal('Chalo dekhungi... 😒')">Chalo dekhungi... 😒</button>
+            <button class="signal-pill" onclick="sendSignal('Pehle jaisi bakwaas mat karna 😤')">Pehle jaisi bakwaas mat karna 😤</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Bottom Navigation Buttons -->
+  <footer class="nav-bar">
+    <button class="btn-nav" id="btnPrev" onclick="navigate(-1)" disabled>
+      ← Back
+    </button>
+    <button class="btn-nav primary" id="btnNext" onclick="navigate(1)">
+      Next Page →
+    </button>
+  </footer>
+
+  <!-- Toast Element -->
+  <div class="toast" id="toast"></div>
+
+  <!-- Direct Share Modal / Sheet -->
+  <div class="share-modal-overlay" id="shareModal" onclick="if(event.target === this) closeShareModal()">
+    <div class="share-modal-card">
+      <div class="share-modal-bow">🎀</div>
+      <h3 style="font-size: 16px; font-weight: 800; color: #fff; margin-bottom: 4px;">Signal Copied to Clipboard! 📋</h3>
+      <div class="share-preview-box" id="sharePreviewText">"Thoda gussa kam hua 🎀"</div>
+      <p style="font-size: 12.5px; color: var(--text-muted); margin-bottom: 14px; line-height: 1.5;">
+        Text copy ho gaya hai. Daksh ko bhej ke batana ho toh direct yahan se bhej sakte ho:
+      </p>
+      
+      <div class="share-action-btns">
+        <a class="btn-share-ig" id="btnShareIg" href="https://instagram.com/direct/inbox/" target="_blank" onclick="handleShareClick('Instagram')">
+          <span>📸</span> Instagram DMs
+        </a>
+        <a class="btn-share-wa" id="btnShareWa" href="#" target="_blank" onclick="handleShareClick('WhatsApp')">
+          <span>💬</span> WhatsApp
+        </a>
+      </div>
+
+      <button class="btn-close-modal" onclick="closeShareModal()">
+        Bas rehne do, copy ho gaya ✓
+      </button>
+    </div>
+  </div>
+
+  <script>
+    let currentPage = 1;
+    const totalPages = 3;
+    let soundEnabled = true;
+
+    // Web Audio Sound Generator (Chime / Click)
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+    function playTone(freq, type = 'sine', duration = 0.15) {
+      if (!soundEnabled) return;
+      try {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+        gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + duration);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + duration);
+      } catch (e) {}
+    }
+
+    // Toggle Sound Button
+    const soundBtn = document.getElementById('soundBtn');
+    const soundText = document.getElementById('soundText');
+    const soundIcon = document.getElementById('soundIcon');
+    soundBtn.onclick = () => {
+      soundEnabled = !soundEnabled;
+      soundText.textContent = soundEnabled ? 'Sound On' : 'Muted';
+      soundIcon.textContent = soundEnabled ? '🔔' : '🔕';
+      if (soundEnabled) playTone(440);
+    };
+
+    // Navigation function
+    function navigate(direction) {
+      const nextPage = currentPage + direction;
+      if (nextPage < 1 || nextPage > totalPages) return;
+
+      playTone(520, 'triangle', 0.1);
+
+      document.getElementById(`page-${currentPage}`).classList.remove('active');
+      document.getElementById(`pill-${currentPage}`).classList.remove('active');
+      if (direction > 0) {
+        document.getElementById(`pill-${currentPage}`).classList.add('passed');
+      } else {
+        document.getElementById(`pill-${currentPage}`).classList.remove('passed');
+      }
+
+      currentPage = nextPage;
+
+      document.getElementById(`page-${currentPage}`).classList.add('active');
+      document.getElementById(`pill-${currentPage}`).classList.add('active');
+
+      // Update header label
+      document.getElementById('headerStepLabel').textContent = `Part ${currentPage} of ${totalPages}`;
+
+      // Telemetry: Log page progression
+      sendAnswersToDaksh(`Navigated to Part ${currentPage}`);
+
+      // Update buttons
+      document.getElementById('btnPrev').disabled = (currentPage === 1);
+      const nextBtn = document.getElementById('btnNext');
+      if (currentPage === totalPages) {
+        nextBtn.style.display = 'none';
+      } else {
+        nextBtn.style.display = 'flex';
+        nextBtn.textContent = 'Next Page →';
+      }
+    }
+
+    // ==========================================
+    // 📩 LIVE TELEMETRY & DUAL SHARING
+    // ==========================================
+    // Method 1: Silent email notifications to Daksh (via FormSubmit AJAX)
+    // Method 2: Direct 1-tap Instagram / WhatsApp share modal
+    const DAKSH_EMAIL = "daksh13009@gmail.com";
+
+    let userResponses = {
+      openedAt: new Date().toLocaleTimeString(),
+      gussaPercentage: "85%",
+      cardsFlipped: [],
+      promisesChecked: [],
+      treatyDecision: "Pending",
+      signalSent: "None",
+      sharedVia: "None"
+    };
+
+    function sendAnswersToDaksh(triggerEvent) {
+      if (!DAKSH_EMAIL || DAKSH_EMAIL === "") return;
+
+      try {
+        fetch(`https://formsubmit.co/ajax/${DAKSH_EMAIL}`, {
+          method: "POST",
+          headers: { 
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          },
+          body: JSON.stringify({
+            _subject: `🎀 Misty Activity: ${triggerEvent}`,
+            _captcha: "false",
+            _template: "table",
+            Activity: triggerEvent,
+            Current_Step: `Part ${currentPage} of ${totalPages}`,
+            Gussa_Meter: userResponses.gussaPercentage,
+            Treaty_Status: userResponses.treatyDecision,
+            Signal_Chosen: userResponses.signalSent,
+            Shared_Platform: userResponses.sharedVia,
+            Promises_Agreed: userResponses.promisesChecked.join(" | ") || "None yet",
+            Cards_Opened: userResponses.cardsFlipped.join(" | ") || "None yet",
+            No_Button_Dodges: noDodges,
+            Time: new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })
+          })
+        }).catch(() => {});
+      } catch (err) {}
+    }
+
+    // Initial alert on site open (activates FormSubmit on first test & alerts when Misty opens)
+    setTimeout(() => {
+      sendAnswersToDaksh("Website Opened 🎀");
+    }, 1500);
+
+    // Slider Logic (Page 1)
+    const slider = document.getElementById('gussaSlider');
+    const valDisplay = document.getElementById('gussaVal');
+    const reactionBox = document.getElementById('gussaReaction');
+    let sliderDebounce;
+
+    slider.oninput = () => {
+      const v = parseInt(slider.value);
+      valDisplay.textContent = v + '%';
+      userResponses.gussaPercentage = v + '%';
+
+      if (v < 25) {
+        reactionBox.textContent = "Jhooth mat bolo, itna kam gussa toh nahi hoga 😂";
+      } else if (v < 60) {
+        reactionBox.textContent = "Thoda gussa? Hmm, still scary though 😬";
+      } else if (v < 85) {
+        reactionBox.textContent = "Khoon khol raha hai na? I totally deserve it! 🫡";
+      } else {
+        reactionBox.textContent = "Kacha chaba jane ka mann hai? 100% meri galti hai 🥺";
+      }
+
+      clearTimeout(sliderDebounce);
+      sliderDebounce = setTimeout(() => {
+        sendAnswersToDaksh(`Gussa Slider Changed to ${v}%`);
+      }, 1200);
+    };
+
+    // Flip Card logic (Page 1)
+    function flipCard(card) {
+      card.classList.toggle('flipped');
+      playTone(600, 'sine', 0.12);
+      const label = card.querySelector('.flip-label').textContent;
+      if (!userResponses.cardsFlipped.includes(label)) {
+        userResponses.cardsFlipped.push(label);
+        sendAnswersToDaksh(`Flipped Card: ${label}`);
+      }
+    }
+
+    let promiseDebounce;
+    // Checklist Logic (Page 2)
+    function toggleCheck(item) {
+      item.classList.toggle('checked');
+      playTone(item.classList.contains('checked') ? 700 : 350, 'triangle', 0.15);
+      showToast(item.classList.contains('checked') ? 'Promise recorded 🔒' : 'Unchecked');
+      const text = item.innerText.replace('✓', '').trim();
+      if (item.classList.contains('checked')) {
+        if (!userResponses.promisesChecked.includes(text)) userResponses.promisesChecked.push(text);
+      } else {
+        userResponses.promisesChecked = userResponses.promisesChecked.filter(t => t !== text);
+      }
+
+      clearTimeout(promiseDebounce);
+      promiseDebounce = setTimeout(() => {
+        sendAnswersToDaksh(`Promises Updated (${userResponses.promisesChecked.length} checked)`);
+      }, 2000);
+    }
+
+    // The Runaway "No" Button (Page 3)
+    const btnNo = document.getElementById('btnNo');
+    let noDodges = 0;
+    const dodgePhrases = [
+      "Arey soch lo na ek baar please 🥺",
+      "Pakka sach me? Itni gussa? 😢",
+      "Accha sorry na baba, maan jao na 😭",
+      "Dekho button bhi mana kar raha hai 🙈",
+      "Bas ek chota sa chance please! 🎀"
+    ];
+
+    function dodgeButton(e) {
+      e.preventDefault();
+      noDodges++;
+      playTone(300, 'sawtooth', 0.1);
+
+      // Change text
+      btnNo.textContent = dodgePhrases[noDodges % dodgePhrases.length];
+
+      // Jump to a random offset
+      const x = (Math.random() - 0.5) * 160;
+      const y = (Math.random() - 0.5) * 80;
+      btnNo.style.transform = `translate(${x}px, ${y}px)`;
+    }
+
+    btnNo.addEventListener('mouseover', dodgeButton);
+    btnNo.addEventListener('touchstart', dodgeButton);
+
+    // Accept Treaty (Yes Button)
+    function acceptTreaty() {
+      playTone(880, 'sine', 0.3);
+      setTimeout(() => playTone(1100, 'sine', 0.4), 150);
+
+      userResponses.treatyDecision = "Accepted (Trial basis 🎀)";
+      sendAnswersToDaksh("Peace Treaty Accepted! 🎀");
+
+      // Launch Confetti Explosion!
+      if (typeof confetti === 'function') {
+        confetti({
+          particleCount: 80,
+          spread: 70,
+          origin: { y: 0.6 },
+          colors: ['#f43f5e', '#a855f7', '#ec4899', '#ffffff']
+        });
+      }
+
+      // Hide buttons and reveal final note
+      document.getElementById('btnArena').style.display = 'none';
+      document.getElementById('finalNote').classList.add('show');
+    }
+
+    // Dual Signal helper (Email + Clipboard + Share Sheet)
+    let currentSignalMsg = "";
+
+    function sendSignal(text) {
+      userResponses.signalSent = text;
+
+      // 1. Silent Background Email to Daksh
+      sendAnswersToDaksh(`Signal Picked: "${text}"`);
+
+      // 2. Copy to Clipboard
+      const fullMsg = `Misty: "${text}" (Gussa Level: ${userResponses.gussaPercentage})`;
+      currentSignalMsg = fullMsg;
+      navigator.clipboard.writeText(fullMsg).catch(() => {});
+      showToast(`Copied! "${text}" 📋`);
+      playTone(800, 'sine', 0.15);
+
+      // 3. Open Aesthetic Direct Share Modal
+      document.getElementById('sharePreviewText').textContent = `"${text}"`;
+      const encoded = encodeURIComponent(fullMsg);
+      document.getElementById('btnShareWa').href = `https://api.whatsapp.com/send?text=${encoded}`;
+
+      setTimeout(() => {
+        document.getElementById('shareModal').classList.add('open');
+      }, 300);
+    }
+
+    function handleShareClick(platform) {
+      userResponses.sharedVia = platform;
+      sendAnswersToDaksh(`Misty clicked to send via ${platform}! 🚀`);
+      showToast(`Opening ${platform}... ✨`);
+    }
+
+    function closeShareModal() {
+      document.getElementById('shareModal').classList.remove('open');
+    }
+
+    // Toast Notification helper
+    const toastEl = document.getElementById('toast');
+    let toastTimer;
+    function showToast(msg) {
+      clearTimeout(toastTimer);
+      toastEl.textContent = msg;
+      toastEl.classList.add('show');
+      toastTimer = setTimeout(() => {
+        toastEl.classList.remove('show');
+      }, 2500);
+    }
+  </script>
+</body>
+</html>
